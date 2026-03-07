@@ -1,0 +1,16 @@
+meta {
+  name: Daily
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/daily?from=2026-03-01&to=2026-03-07
+  body: none
+  auth: none
+}
+
+params:query {
+  from: 2026-03-01
+  to: 2026-03-07
+}

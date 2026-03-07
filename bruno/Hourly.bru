@@ -1,0 +1,16 @@
+meta {
+  name: Hourly
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/hourly?from=2026-03-01&to=2026-03-07
+  body: none
+  auth: none
+}
+
+params:query {
+  from: 2026-03-01
+  to: 2026-03-07
+}
