@@ -42,5 +42,10 @@ export function registerRoutes(app) {
 
   app.get('/api/report', () => weeklyReport());
 
+  app.get('/live', (req) => {
+    const limit = Math.min(parseInt(req.query.limit) || 10, 100);
+    return recentDetections(limit);
+  });
+
   app.get('/health', () => ({ status: 'ok' }));
 }

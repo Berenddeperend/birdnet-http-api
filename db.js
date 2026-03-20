@@ -114,20 +114,32 @@ export function weeklyReport() {
   const daily = dailyCounts(fmt(weekStart), fmt(weekEnd));
   const hourly = hourlyActivity(fmt(weekStart), fmt(weekEnd));
 
-  const lastWeekNames = new Set(lastWeek.map((s) => s.Com_Name));
-  const newSpecies = thisWeek.filter((s) => !lastWeekNames.has(s.Com_Name));
+  const lastWeekMap = new Map(lastWeek.map((s) => [s.Com_Name, s.count]));
+  const newSpecies = thisWeek.filter((s) => !lastWeekMap.has(s.Com_Name));
+
+  const pct = (cur, prev) => prev > 0 ? Math.round(((cur - prev) / prev) * 1000) / 10 : null;
+
+  const totalDetections = thisWeek.reduce((sum, s) => sum + s.count, 0);
+  const prevTotalDetections = lastWeek.reduce((sum, s) => sum + s.count, 0);
+
+  const species = thisWeek.map((s) => {
+    const prev_count = lastWeekMap.get(s.Com_Name) || 0;
+    return { ...s, prev_count, change_pct: pct(s.count, prev_count) };
+  });
 
   return {
     period: { from: fmt(weekStart), to: fmt(weekEnd) },
     previous_period: { from: fmt(prevStart), to: fmt(prevEnd) },
     summary: {
-      total_detections: thisWeek.reduce((sum, s) => sum + s.count, 0),
+      total_detections: totalDetections,
       unique_species: thisWeek.length,
-      prev_total_detections: lastWeek.reduce((sum, s) => sum + s.count, 0),
+      prev_total_detections: prevTotalDetections,
       prev_unique_species: lastWeek.length,
+      detections_change_pct: pct(totalDetections, prevTotalDetections),
+      species_change_pct: pct(thisWeek.length, lastWeek.length),
     },
     new_species: newSpecies,
-    species: thisWeek,
+    species,
     daily,
     hourly,
   };
